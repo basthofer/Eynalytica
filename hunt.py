@@ -12,7 +12,7 @@ app = FastAPI()
 async def email_api(email: str = Path(...)):
     try:
         process = subprocess.Popen(['ghunt', 'email', '--json', f'{email}.json', email], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        process.wait()  # Wait for the process to complete
+        process.wait() 
         if os.path.exists(f'{email}.json'):
             with open(f'{email}.json', 'r') as file:
                 email_data = json.load(file)
