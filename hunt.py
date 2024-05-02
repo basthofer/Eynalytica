@@ -5,6 +5,7 @@ import json
 import os
 import requests
 import re
+import httpx
 
 app = FastAPI()
 
@@ -62,3 +63,32 @@ async def get_contributor_name(id: str):
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail="Failed to fetch data.") from e
 
+
+@app.get("/breach/{email}")
+async def check_breach(email: str):
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(f"https://breach.darkling.workers.dev/{email}")
+            response.raise_for_status()
+            data = response.json()
+            return data
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise HTTPException(status_code=404, detail="Email not found")
+            else:
+                raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.get("/leaks/{email}")
+async def check_breach(email: str):
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(f"https://breach2.darkling.workers.dev/{email}")
+            response.raise_for_status()
+            data = response.json()
+            return data
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise HTTPException(status_code=404, detail="Email not found")
+            else:
+                raise HTTPException(status_code=500, detail="Internal server error")
